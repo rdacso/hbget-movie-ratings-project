@@ -70,17 +70,18 @@ def load_ratings():
     Rating.query.delete()
     for row in open("seed_data/u.data"):
         row = row.strip()
-        rating_id, movie_id, user_id, score = row.split("\t")
-        rating_id = Rating.merge(rating_id)
-        print rating_id
-        # rating = Rating(rating_id=rating_id,
-        #     movie_id=movie_id,
-        #     user_id=user_id,
-        #     score=score)
+        user_id, movie_id, score = row.split("\t")[:3]
 
-    #     db.session.add(rating)
+   
 
-    # db.session.commit()
+        rating = Rating(
+            movie_id=movie_id,
+            user_id=user_id,
+            score=score)
+
+        db.session.add(rating)
+
+    db.session.commit()
 
 
 def set_val_user_id():
