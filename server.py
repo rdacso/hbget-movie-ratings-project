@@ -34,27 +34,74 @@ def user_list():
     return render_template("user_list.html", users=users)
 
 
-@app.route('/register',methods=['GET'])
+@app.route('/register')
 def user_signin():
     """User sign in form."""
-    username = request.args('username')
-    password = request.args('password')
-
-    username  = User.query.get(1)
-
-    print username
-
-
-
-    return render_template('user_form.html', username=username, password=password)
-
+    
+    return render_template('user_form.html')
 
 @app.route('/register',methods=['POST'])
 def register_process():
     """User sign in form."""
-    db.session.add(username)
 
-    return redirect('/')
+    email = request.form.get('email')
+    password = request.form.get('password')
+
+   
+    existing_user = User.query.filter_by(email=email).first()
+
+    if not existing_user:
+        flash("Try Again.")
+        return render_template("testuser.html")
+    
+    if not password != password:
+        flash("Try again.")
+        return render_template("testuser.html")
+
+    session["user_id"] = existing_user.user_id
+
+    # make query to check if email already in db
+        # if there log them(add new_user to the session) in and redirect 
+
+
+    new_user  = User(email=email, password=password)
+# add user to the db
+ # commit the new user
+ # log them in and redirect (add to new_user to the session)
+
+    # if not user:
+    #     flash("No such email address.")
+    #     return redirect('/register')
+
+    # if user.password != password:
+    #     flash("Incorrect password.")
+    #     return redirect("/register")
+
+    # # session["logged_in_customer_email"] = user.username
+    # # flash("Logged in.")
+    # return redirect("/")
+
+    # error = None
+    # if request.method == 'POST':
+    #     if request.form['username'] != 'username' or \
+    #             request.form['password'] != 'password':
+    #         error = 'Invalid credentials'
+    #     else:
+    #         flash('You were successfully logged in')
+        
+
+    # for user in users:
+    #     username  = User.query.get(1)
+    #     if username not in users:
+    #         ratings.make_new_user(username, password)
+
+
+
+
+    db.session.add(new_user)
+    db.session.commit()
+    # return redirect('/',username=username, password=password)
+
 
 
 
