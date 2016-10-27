@@ -17,6 +17,7 @@ app.secret_key = "ABC"
 # silently. This is horrible. Fix this so that, instead, it raises an
 # error.
 app.jinja_env.undefined = StrictUndefined
+app.jinja_env.auto_reload = True
 
 
 @app.route('/')
@@ -44,27 +45,22 @@ def user_signin():
 def register_process():
     """User sign in form."""
 
-    email = request.form.get('email')
-    password = request.form.get('password')
 
-   
-    existing_user = User.query.filter_by(email=email).first()
-
-    if not existing_user:
-        flash("Try Again.")
-        return render_template("testuser.html")
-    
-    if not password != password:
-        flash("Try again.")
-        return render_template("testuser.html")
-
-    session["user_id"] = existing_user.user_id
-
-    # make query to check if email already in db
-        # if there log them(add new_user to the session) in and redirect 
+    # Get form variables
+    email = request.form["email"]
+    password = request.form["password"]
+    age = request.form["age"]
+    zipcode = request.form["zipcode"]
 
 
-    new_user  = User(email=email, password=password)
+    new_user = User(email=email, password=password, age=age, zipcode=zipcode)
+
+    db.session.add(new_user)
+    db.session.commit()
+
+    flash("You have been added! Please log in.")
+    return redirect("/")
+
 # add user to the db
  # commit the new user
  # log them in and redirect (add to new_user to the session)
@@ -98,9 +94,68 @@ def register_process():
 
 
 
-    db.session.add(new_user)
-    db.session.commit()
     # return redirect('/',username=username, password=password)
+
+@app.route('/logout')
+def logout():
+    """Log out."""
+
+    del session["user_id"]
+    flash("Logged Out.")
+    return redirect("/")
+
+
+@app.route('/login')
+def login():
+    """Log In."""
+
+    
+    flash("Logged In.")
+    return render_template("login.html")
+
+
+@app.route('/login', methods=['POST'])
+def confirm():
+    """Log In."""
+
+    email = request.form["email"]
+
+    user = User.query.filter_by(email=email).one()
+
+    session["user_id"] = user.user_id
+    flash("Logged In.")
+    return redirect("/user/" + str(user.user_id))
+
+
+@app.route('/user/<user_id>')
+def user_info(user_id):
+    """shows user info"""
+
+    user = User.query.filter_by(user_id=user_id).one()
+
+
+    return render_template("user_info.html", user=user)
+
+@app.route('/movies')
+def show_movies():
+
+    """Shows list of movies"""
+
+    movies = Movie.query.order_by(Movie.title).all()
+
+    return render_template("movielist.html", movies=movies)
+
+
+@app.route('/<movie_id>')
+def show_movie_details():
+
+    """Shows movie details"""
+
+    movies = Movie.query.filter_by(Movie.movie_id).all()
+    ratings = Movie.query.filter_by(Movie.ratings).all()
+
+    return render_template("movie-detail.html", movies=movies, ratings=ratings)
+
 
 
 
