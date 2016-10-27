@@ -8,7 +8,7 @@
       {% for rating in movie.ratings %}
           <li>
               <a>
-                ({{ rating.score }})
+                {{ rating.movie.title }} ({{ rating.score }})
               </a>
           </li>
       {% endfor %}

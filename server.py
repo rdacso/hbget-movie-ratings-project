@@ -127,7 +127,7 @@ def confirm():
     return redirect("/user/" + str(user.user_id))
 
 
-@app.route('/user/<user_id>')
+@app.route('/users/<user_id>')
 def user_info(user_id):
     """shows user info"""
 
@@ -146,15 +146,15 @@ def show_movies():
     return render_template("movielist.html", movies=movies)
 
 
-@app.route('/<movie_id>')
-def show_movie_details():
+@app.route('/movies/<movie_id>')
+def show_movie_details(movie_id):
 
     """Shows movie details"""
 
-    movies = Movie.query.filter_by(Movie.movie_id).all()
-    ratings = Movie.query.filter_by(Movie.ratings).all()
+    movies = Movie.query.filter_by(movie_id=movie_id).one()
+    # ratings = Rating.query.filter_by(score=score).all()
 
-    return render_template("movie-detail.html", movies=movies, ratings=ratings)
+    return render_template("movie-detail.html", movies=movies)
 
 
 
