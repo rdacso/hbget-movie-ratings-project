@@ -23,7 +23,7 @@ app.jinja_env.auto_reload = True
 @app.route('/')
 def index():
     """Homepage."""
- 
+    #show homepage.html template
     return render_template("homepage.html")
 
 
@@ -31,6 +31,7 @@ def index():
 def user_list():
     """Show list of users."""
 
+    #query and display all users in database
     users = User.query.all()
     return render_template("user_list.html", users=users)
 
@@ -124,7 +125,7 @@ def confirm():
 
     session["user_id"] = user.user_id
     flash("Logged In.")
-    return redirect("/user/" + str(user.user_id))
+    return redirect("/users/" + str(user.user_id))
 
 
 @app.route('/users/<user_id>')
@@ -151,11 +152,37 @@ def show_movie_details(movie_id):
 
     """Shows movie details"""
 
-    movies = Movie.query.filter_by(movie_id=movie_id).one()
-    # ratings = Rating.query.filter_by(score=score).all()
+    movie = Movie.query.filter_by(movie_id=movie_id).one()
 
-    return render_template("movie-detail.html", movies=movies)
+    return render_template("movie-detail.html", movie=movie)
 
+
+@app.route('/ratemovie')
+def rate_movie():
+    """Movie rating form"""
+    
+    return render_template("movie-detail.html", movie=movie)
+
+@app.route('/ratemovie',methods=['POST'])
+def rating_process():
+    """Process movie rating form."""
+
+
+    # Get form variables
+    score = request.form["score"]
+    movie_id = request.form['movie_id']
+    #get user_id from existing session
+    user_id = session.get('user_id')
+    #create variable that calls the class Ratings and passes variables
+    new_rate = Rating(score=score, movie_id=movie_id, user_id=user_id)
+    #add new_rate to the database
+    db.session.add(new_rate)
+    #commit new_rate to the database
+    db.session.commit()
+  
+    flash("Your score has been added!")
+
+    return redirect("/movies")
 
 
 

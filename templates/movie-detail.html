@@ -2,6 +2,18 @@
 {% block content %}
 
 <h1>{{ movie.title }}</h1>
+<h2>What did you think of this movie? Please select a rating between 1 and 5.</h2>
+
+<form action='/ratemovie' method='POST'>
+  <input type='hidden' name='movie_id' value="{{ movie.movie_id }}">
+  <input type='radio' name='score' value='1'> <label>1</label>
+  <input type='radio' name='score' value='2'> <label>2</label>
+  <input type='radio' name='score' value='3'> <label>3</label>
+  <input type='radio' name='score' value='4'> <label>4</label>
+  <input type='radio' name='score' value='5'> <label>5</label><br>
+  <input type='submit'>
+
+</form>
 
 <h2>Ratings</h2>
     <ul>
