@@ -167,7 +167,6 @@ def rate_movie():
 def rating_process():
     """Process movie rating form."""
 
-
     # Get form variables
     score = request.form["score"]
     movie_id = request.form['movie_id']
@@ -179,8 +178,27 @@ def rating_process():
     db.session.add(new_rate)
     #commit new_rate to the database
     db.session.commit()
+
+    #check to see if user has already added score to database
+    #If score already exists, update it
+    #If score does not exist yet, add it to the database
+
+    rating_query = Rating.query.filter(Rating.user_id==user_id, Rating.movie_id==movie_id).all()[0].score
+
+    if rating_query.score[-1]:
+        rating_query.score(new_rate)
+        db.session.add(new_rate)
+        db.session.commit()
+    else:
+        
+
+
+
+   
   
     flash("Your score has been added!")
+
+
 
     return redirect("/movies")
 
